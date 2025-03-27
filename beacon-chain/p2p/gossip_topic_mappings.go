@@ -5,6 +5,7 @@ import (
 
 	"github.com/prysmaticlabs/prysm/v5/config/params"
 	"github.com/prysmaticlabs/prysm/v5/consensus-types/primitives"
+	enginev1 "github.com/prysmaticlabs/prysm/v5/proto/engine/v1"
 	ethpb "github.com/prysmaticlabs/prysm/v5/proto/prysm/v1alpha1"
 	"google.golang.org/protobuf/proto"
 )
@@ -22,6 +23,9 @@ var gossipTopicMappings = map[string]func() proto.Message{
 	SyncCommitteeSubnetTopicFormat:            func() proto.Message { return &ethpb.SyncCommitteeMessage{} },
 	BlsToExecutionChangeSubnetTopicFormat:     func() proto.Message { return &ethpb.SignedBLSToExecutionChange{} },
 	BlobSubnetTopicFormat:                     func() proto.Message { return &ethpb.BlobSidecar{} },
+	SignedExecutionPayloadHeaderTopicFormat:   func() proto.Message { return &enginev1.SignedExecutionPayloadHeader{} },
+	SignedExecutionPayloadEnvelopeTopicFormat: func() proto.Message { return &enginev1.SignedExecutionPayloadEnvelope{} },
+	PayloadAttestationMessageTopicFormat:      func() proto.Message { return &ethpb.PayloadAttestationMessage{} },
 }
 
 // GossipTopicMappings is a function to return the assigned data type
@@ -29,6 +33,9 @@ var gossipTopicMappings = map[string]func() proto.Message{
 func GossipTopicMappings(topic string, epoch primitives.Epoch) proto.Message {
 	switch topic {
 	case BlockSubnetTopicFormat:
+		if epoch >= params.BeaconConfig().EPBSForkEpoch {
+			return &ethpb.SignedBeaconBlockEpbs{}
+		}
 		if epoch >= params.BeaconConfig().FuluForkEpoch {
 			return &ethpb.SignedBeaconBlockFulu{}
 		}
@@ -61,6 +68,21 @@ func GossipTopicMappings(topic string, epoch primitives.Epoch) proto.Message {
 	case AggregateAndProofSubnetTopicFormat:
 		if epoch >= params.BeaconConfig().ElectraForkEpoch {
 			return &ethpb.SignedAggregateAttestationAndProofElectra{}
+		}
+		return gossipMessage(topic)
+	case PayloadAttestationMessageTopicFormat:
+		if epoch >= params.BeaconConfig().EPBSForkEpoch {
+			return &ethpb.PayloadAttestationMessage{}
+		}
+		return gossipMessage(topic)
+	case SignedExecutionPayloadHeaderTopicFormat:
+		if epoch >= params.BeaconConfig().EPBSForkEpoch {
+			return &enginev1.SignedExecutionPayloadHeader{}
+		}
+		return gossipMessage(topic)
+	case SignedExecutionPayloadEnvelopeTopicFormat:
+		if epoch >= params.BeaconConfig().EPBSForkEpoch {
+			return &enginev1.SignedExecutionPayloadEnvelope{}
 		}
 		return gossipMessage(topic)
 	default:
@@ -115,4 +137,10 @@ func init() {
 
 	// Specially handle Fulu objects.
 	GossipTypeMapping[reflect.TypeOf(&ethpb.SignedBeaconBlockFulu{})] = BlockSubnetTopicFormat
+
+	// Handle ePBS objects.
+	GossipTypeMapping[reflect.TypeOf(&enginev1.SignedExecutionPayloadHeader{})] = SignedExecutionPayloadHeaderTopicFormat
+	GossipTypeMapping[reflect.TypeOf(&enginev1.SignedExecutionPayloadEnvelope{})] = SignedExecutionPayloadEnvelopeTopicFormat
+	GossipTypeMapping[reflect.TypeOf(&ethpb.PayloadAttestationMessage{})] = PayloadAttestationMessageTopicFormat
+	GossipTypeMapping[reflect.TypeOf(&ethpb.SignedBeaconBlockEpbs{})] = BlockSubnetTopicFormat
 }

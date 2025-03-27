@@ -22,4 +22,5 @@ type ValidatorDuty struct {
 	Status                  ValidatorStatus
 	ValidatorIndex          primitives.ValidatorIndex
 	IsSyncCommittee         bool
+	PtcSlot                 primitives.Slot
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/prysmaticlabs/prysm/v5/consensus-types/primitives"
 	"github.com/prysmaticlabs/prysm/v5/encoding/bytesutil"
 	"github.com/prysmaticlabs/prysm/v5/monitoring/tracing/trace"
+	enginev1 "github.com/prysmaticlabs/prysm/v5/proto/engine/v1"
 	ethpb "github.com/prysmaticlabs/prysm/v5/proto/prysm/v1alpha1"
 	"github.com/prysmaticlabs/prysm/v5/validator/client/iface"
 )
@@ -315,6 +316,14 @@ func (c *beaconApiValidatorClient) AggregatedSyncSelections(ctx context.Context,
 	})
 }
 
+func (c *beaconApiValidatorClient) GetPayloadAttestationData(ctx context.Context, in *ethpb.GetPayloadAttestationDataRequest) (*ethpb.PayloadAttestationData, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (c *beaconApiValidatorClient) SubmitPayloadAttestation(ctx context.Context, in *ethpb.PayloadAttestationMessage) (*empty.Empty, error) {
+	return nil, errors.New("not implemented")
+}
+
 func wrapInMetrics[Resp any](action string, f func() (Resp, error)) (Resp, error) {
 	now := time.Now()
 	resp, err := f()
@@ -333,4 +342,20 @@ func (c *beaconApiValidatorClient) Host() string {
 
 func (c *beaconApiValidatorClient) SetHost(host string) {
 	c.jsonRestHandler.SetHost(host)
+}
+
+func (c *beaconApiValidatorClient) GetLocalHeader(ctx context.Context, req *ethpb.HeaderRequest) (*enginev1.ExecutionPayloadHeaderEPBS, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (c *beaconApiValidatorClient) GetExecutionPayloadEnvelope(ctx context.Context, in *ethpb.PayloadEnvelopeRequest) (*enginev1.ExecutionPayloadEnvelope, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (c *beaconApiValidatorClient) SubmitSignedExecutionPayloadHeader(ctx context.Context, h *enginev1.SignedExecutionPayloadHeader) (*empty.Empty, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (c *beaconApiValidatorClient) SubmitSignedExecutionPayloadEnvelope(ctx context.Context, env *enginev1.SignedExecutionPayloadEnvelope) (*empty.Empty, error) {
+	return nil, errors.New("not implemented")
 }

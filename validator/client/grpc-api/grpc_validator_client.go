@@ -13,6 +13,7 @@ import (
 	"github.com/prysmaticlabs/prysm/v5/consensus-types/primitives"
 	"github.com/prysmaticlabs/prysm/v5/encoding/bytesutil"
 	"github.com/prysmaticlabs/prysm/v5/monitoring/tracing/trace"
+	enginev1 "github.com/prysmaticlabs/prysm/v5/proto/engine/v1"
 	ethpb "github.com/prysmaticlabs/prysm/v5/proto/prysm/v1alpha1"
 	"github.com/prysmaticlabs/prysm/v5/validator/client/iface"
 	log "github.com/sirupsen/logrus"
@@ -208,6 +209,30 @@ func (*grpcValidatorClient) AggregatedSelections(context.Context, []iface.Beacon
 
 func (*grpcValidatorClient) AggregatedSyncSelections(context.Context, []iface.SyncCommitteeSelection) ([]iface.SyncCommitteeSelection, error) {
 	return nil, iface.ErrNotSupported
+}
+
+func (c *grpcValidatorClient) GetPayloadAttestationData(ctx context.Context, in *ethpb.GetPayloadAttestationDataRequest) (*ethpb.PayloadAttestationData, error) {
+	return c.beaconNodeValidatorClient.GetPayloadAttestationData(ctx, in)
+}
+
+func (c *grpcValidatorClient) SubmitPayloadAttestation(ctx context.Context, in *ethpb.PayloadAttestationMessage) (*empty.Empty, error) {
+	return c.beaconNodeValidatorClient.SubmitPayloadAttestation(ctx, in)
+}
+
+func (c *grpcValidatorClient) GetLocalHeader(ctx context.Context, req *ethpb.HeaderRequest) (*enginev1.ExecutionPayloadHeaderEPBS, error) {
+	return c.beaconNodeValidatorClient.GetLocalHeader(ctx, req)
+}
+
+func (c *grpcValidatorClient) GetExecutionPayloadEnvelope(ctx context.Context, in *ethpb.PayloadEnvelopeRequest) (*enginev1.ExecutionPayloadEnvelope, error) {
+	return c.beaconNodeValidatorClient.GetExecutionPayloadEnvelope(ctx, in)
+}
+
+func (c *grpcValidatorClient) SubmitSignedExecutionPayloadHeader(ctx context.Context, h *enginev1.SignedExecutionPayloadHeader) (*empty.Empty, error) {
+	return c.beaconNodeValidatorClient.SubmitSignedExecutionPayloadHeader(ctx, h)
+}
+
+func (c *grpcValidatorClient) SubmitSignedExecutionPayloadEnvelope(ctx context.Context, env *enginev1.SignedExecutionPayloadEnvelope) (*empty.Empty, error) {
+	return c.beaconNodeValidatorClient.SubmitSignedExecutionPayloadEnvelope(ctx, env)
 }
 
 func NewGrpcValidatorClient(cc grpc.ClientConnInterface) iface.ValidatorClient {

@@ -8,12 +8,14 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/holiman/uint256"
 	"github.com/pkg/errors"
+	"github.com/prysmaticlabs/prysm/v5/beacon-chain/execution"
 	"github.com/prysmaticlabs/prysm/v5/config/params"
 	"github.com/prysmaticlabs/prysm/v5/consensus-types/blocks"
 	"github.com/prysmaticlabs/prysm/v5/consensus-types/interfaces"
 	payloadattribute "github.com/prysmaticlabs/prysm/v5/consensus-types/payload-attribute"
 	"github.com/prysmaticlabs/prysm/v5/consensus-types/primitives"
 	"github.com/prysmaticlabs/prysm/v5/encoding/bytesutil"
+	enginev1 "github.com/prysmaticlabs/prysm/v5/proto/engine/v1"
 	pb "github.com/prysmaticlabs/prysm/v5/proto/engine/v1"
 )
 
@@ -38,6 +40,10 @@ type EngineClient struct {
 	ErrGetPayload               error
 	BlobSidecars                []blocks.VerifiedROBlob
 	ErrorBlobSidecars           error
+}
+
+func (e *EngineClient) Client() execution.RPCClient {
+	return nil
 }
 
 // NewPayload --
@@ -72,6 +78,10 @@ func (e *EngineClient) ExecutionBlockByHash(_ context.Context, h common.Hash, _ 
 		return nil, errors.New("block not found")
 	}
 	return b, e.ErrExecBlockByHash
+}
+
+func (e *EngineClient) ReconstructPayloadEnvelope(_ context.Context, _ *enginev1.SignedBlindPayloadEnvelope) (*enginev1.SignedExecutionPayloadEnvelope, error) {
+	panic("implement me")
 }
 
 // ReconstructFullBlock --
