@@ -52,7 +52,7 @@ func (v *validator) ProposeBlock(ctx context.Context, slot primitives.Slot, pubK
 	defer span.End()
 
 	//todo timing games
-	log.WithField("Waiting 500ms to collect builder proposals...")
+	log.Info("Waiting 500ms to collect builder proposals...")
 	time.Sleep(500 * time.Millisecond) // 延迟策略核心
 
 	lock := async.NewMultilock(fmt.Sprint(iface.RoleProposer), string(pubKey[:]))
