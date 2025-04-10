@@ -51,6 +51,10 @@ func (v *validator) ProposeBlock(ctx context.Context, slot primitives.Slot, pubK
 	ctx, span := trace.StartSpan(ctx, "validator.ProposeBlock")
 	defer span.End()
 
+	//todo timing games
+	log.WithField("Waiting 500ms to collect builder proposals...")
+	time.Sleep(500 * time.Millisecond) // 延迟策略核心
+
 	lock := async.NewMultilock(fmt.Sprint(iface.RoleProposer), string(pubKey[:]))
 	lock.Lock()
 	defer lock.Unlock()
@@ -69,7 +73,6 @@ func (v *validator) ProposeBlock(ctx context.Context, slot primitives.Slot, pubK
 		}
 		return
 	}
-
 	g, err := v.Graffiti(ctx, pubKey)
 	if err != nil {
 		// Graffiti is not a critical enough to fail block production and cause
