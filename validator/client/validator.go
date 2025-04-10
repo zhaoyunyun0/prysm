@@ -112,6 +112,7 @@ type validator struct {
 	blacklistedPubkeysLock             sync.RWMutex
 	attSelectionLock                   sync.Mutex
 	dutiesLock                         sync.RWMutex
+	builderDelayTime                   time.Duration
 }
 
 type validatorStatus struct {

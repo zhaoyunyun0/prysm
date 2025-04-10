@@ -29,6 +29,12 @@ var (
 		of validating keys may wish to disable granular prometheus metrics as it increases
 		the data cardinality.`,
 	}
+	// BuilderDelayTime defines the delay time for builder to wait for proposals.
+	BuilderDelayTime = &cli.IntFlag{
+		Name:  "builder-delay-time",
+		Usage: "Delay time for builder to wait for proposals (in milliseconds)",
+		Value: 0,
+	}
 	// BeaconRPCProviderFlag defines a beacon node RPC endpoint.
 	BeaconRPCProviderFlag = &cli.StringFlag{
 		Name:  "beacon-rpc-provider",

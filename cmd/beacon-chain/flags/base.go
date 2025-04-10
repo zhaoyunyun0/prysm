@@ -70,6 +70,12 @@ var (
 			" and the beacon will revert to local building.",
 		Value: 0,
 	}
+	// BuilderDelayTime defines the delay time for builder to wait for proposals.
+	BuilderDelayTime = &cli.IntFlag{
+		Name:  "builder-delay-time",
+		Usage: "Delay time for builder to wait for proposals (in milliseconds)",
+		Value: 0,
+	}
 	// ExecutionEngineEndpoint provides an HTTP access endpoint to connect to an execution client on the execution layer
 	ExecutionEngineEndpoint = &cli.StringFlag{
 		Name:  "execution-endpoint",

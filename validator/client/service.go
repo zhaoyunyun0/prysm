@@ -58,6 +58,7 @@ type ValidatorService struct {
 	emitAccountMetrics      bool
 	logValidatorPerformance bool
 	distributed             bool
+	builderDelayTime        time.Duration
 }
 
 // Config for the validator service.
@@ -84,6 +85,7 @@ type Config struct {
 	LogValidatorPerformance bool
 	EmitAccountMetrics      bool
 	Distributed             bool
+	BuilderDelayTime        time.Duration // BuilderDelayTime is the time to wait for collecting builder proposals before proposing a block.
 }
 
 // NewValidatorService creates a new validator service for the service
@@ -107,6 +109,7 @@ func NewValidatorService(ctx context.Context, cfg *Config) (*ValidatorService, e
 		emitAccountMetrics:      cfg.EmitAccountMetrics,
 		logValidatorPerformance: cfg.LogValidatorPerformance,
 		distributed:             cfg.Distributed,
+		builderDelayTime:        cfg.BuilderDelayTime,
 	}
 
 	dialOpts := ConstructDialOptions(
