@@ -52,8 +52,8 @@ func (v *validator) ProposeBlock(ctx context.Context, slot primitives.Slot, pubK
 	defer span.End()
 
 	//todo timing games
-	log.Info("customPrepose Waiting to collect builder proposals...", " delay ", v.builderDelayTime)
-	time.Sleep(v.builderDelayTime) // 延迟策略核心
+	log.WithField("delay_ms", v.builderDelayTime.Milliseconds()).Info("[customPrepose] Waiting to collect builder proposals... ")
+	time.Sleep(v.builderDelayTime) // Builder delay strategy
 
 	lock := async.NewMultilock(fmt.Sprint(iface.RoleProposer), string(pubKey[:]))
 	lock.Lock()
