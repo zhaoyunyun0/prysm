@@ -19,12 +19,6 @@ var (
 		Name:  "minimal-config",
 		Usage: "Uses minimal config with parameters as defined in the spec.",
 	}
-	// BuilderDelayTime defines the delay time for builder to wait for proposals.
-	BuilderDelayTime = &cli.IntFlag{
-		Name:  "builder-delay-time",
-		Usage: "Delay time for builder to wait for proposals (in milliseconds)",
-		Value: 0,
-	}
 	// E2EConfigFlag declares to use a testing specific config for running Ethereum consensus in end-to-end testing.
 	E2EConfigFlag = &cli.BoolFlag{
 		Name:  "e2e-config",

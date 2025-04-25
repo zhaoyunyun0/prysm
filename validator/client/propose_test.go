@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/prysmaticlabs/prysm/v5/beacon-chain/core/signing"
@@ -30,6 +31,7 @@ import (
 	testing2 "github.com/prysmaticlabs/prysm/v5/validator/db/testing"
 	"github.com/prysmaticlabs/prysm/v5/validator/graffiti"
 	logTest "github.com/sirupsen/logrus/hooks/test"
+	"github.com/sirupsen/logrus"
 	"go.uber.org/mock/gomock"
 )
 
@@ -1285,4 +1287,79 @@ func Test_validator_SetGraffiti(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestBuilderDelayTime(t *testing.T) {
+	// 创建一个测试用的 logger hook 来捕获日志输出
+	hook := logTest.NewLocal(logrus.New())
+	logrus.SetLevel(logrus.InfoLevel)
+
+	// 测试不同的 delay time 值
+	testCases := []struct {
+		name        string
+		delayTime   time.Duration
+		expectedLog string
+	}{
+		{
+			name:        "500ms delay",
+			delayTime:   500 * time.Millisecond,
+			expectedLog: "500",
+		},
+		{
+			name:        "1000ms delay",
+			delayTime:   1000 * time.Millisecond,
+			expectedLog: "1000",
+		},
+		{
+			name:        "0ms delay",
+			delayTime:   0 * time.Millisecond,
+			expectedLog: "0",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// 创建测试用的 validator 实例
+			v := &validator{
+				builderDelayTime: tc.delayTime,
+			}
+
+			// 创建一个测试用的公钥
+			pubKey := [fieldparams.BLSPubkeyLength]byte{1, 2, 3, 4}
+
+			// 调用 ProposeBlock 方法
+			v.ProposeBlock(context.Background(), 1, pubKey)
+
+			// 检查日志输出
+			found := false
+			for _, entry := range hook.AllEntries() {
+				if entry.Message == "[customPrepose] Waiting to collect builder proposals... " {
+					delay, ok := entry.Data["delay_ms"].(int64)
+					require.Equal(t, true, ok, "delay_ms field should be present in log")
+					require.Equal(t, tc.delayTime.Milliseconds(), delay, "delay time should match expected value")
+					found = true
+					break
+				}
+			}
+			require.Equal(t, true, found, "expected log message not found")
+
+			// 清理日志
+			hook.Reset()
+		})
+	}
+}
+
+// TestBuilderDelayTimeIntegration 测试完整的参数传递链路
+func TestBuilderDelayTimeIntegration(t *testing.T) {
+	// 创建测试用的配置
+	config := &Config{
+		BuilderDelayTime: 500 * time.Millisecond,
+	}
+
+	// 创建 ValidatorService
+	service, err := NewValidatorService(context.Background(), config)
+	require.NoError(t, err)
+
+	// 验证参数是否正确传递
+	require.Equal(t, 500*time.Millisecond, service.builderDelayTime, "builder delay time should be 500ms")
 }
