@@ -430,6 +430,13 @@ func (c *ValidatorClient) registerValidatorService(cliCtx *cli.Context) error {
 		return err
 	}
 
+	// Log builder delay time value
+	builderDelayTime := time.Duration(cliCtx.Int(flags.BuilderDelayTime.Name)) * time.Millisecond
+	log.WithFields(logrus.Fields{
+		"raw_value_ms": cliCtx.Int(flags.BuilderDelayTime.Name),
+		"duration_ms":  builderDelayTime.Milliseconds(),
+	}).Info("[Builder] Initializing validator service with builder delay time")
+
 	validatorService, err := client.NewValidatorService(cliCtx.Context, &client.Config{
 		DB:                      c.db,
 		Wallet:                  c.wallet,
@@ -452,7 +459,7 @@ func (c *ValidatorClient) registerValidatorService(cliCtx *cli.Context) error {
 		LogValidatorPerformance: !cliCtx.Bool(flags.DisablePenaltyRewardLogFlag.Name),
 		EmitAccountMetrics:      !cliCtx.Bool(flags.DisableAccountMetricsFlag.Name),
 		Distributed:             cliCtx.Bool(flags.EnableDistributed.Name),
-		BuilderDelayTime:        time.Duration(cliCtx.Int(flags.BuilderDelayTime.Name)) * time.Millisecond,
+		BuilderDelayTime:        builderDelayTime,
 	})
 	if err != nil {
 		return errors.Wrap(err, "could not initialize validator service")

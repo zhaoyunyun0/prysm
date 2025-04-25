@@ -51,9 +51,22 @@ func (v *validator) ProposeBlock(ctx context.Context, slot primitives.Slot, pubK
 	ctx, span := trace.StartSpan(ctx, "validator.ProposeBlock")
 	defer span.End()
 
-	//todo timing games
-	log.WithField("delay_ms", v.builderDelayTime.Milliseconds()).Info("[customPrepose] Waiting to collect builder proposals... ")
+	// Log before delay
+	startTime := time.Now()
+	log.WithFields(logrus.Fields{
+		"delay_ms":        v.builderDelayTime.Milliseconds(),
+		"start_timestamp": startTime.UnixNano() / int64(time.Millisecond),
+	}).Info("[Builder] Starting to collect builder proposals")
+
 	time.Sleep(v.builderDelayTime) // Builder delay strategy
+
+	// Log after delay
+	endTime := time.Now()
+	log.WithFields(logrus.Fields{
+		"delay_ms":      v.builderDelayTime.Milliseconds(),
+		"end_timestamp": endTime.UnixNano() / int64(time.Millisecond),
+		"actual_delay_ms": endTime.Sub(startTime).Milliseconds(),
+	}).Info("[Builder] Finished collecting builder proposals")
 
 	lock := async.NewMultilock(fmt.Sprint(iface.RoleProposer), string(pubKey[:]))
 	lock.Lock()

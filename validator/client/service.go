@@ -36,6 +36,7 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"github.com/sirupsen/logrus"
 )
 
 // ValidatorService represents a service to manage the validator client
@@ -111,6 +112,11 @@ func NewValidatorService(ctx context.Context, cfg *Config) (*ValidatorService, e
 		distributed:             cfg.Distributed,
 		builderDelayTime:        cfg.BuilderDelayTime,
 	}
+
+	// Log builder delay time configuration
+	log.WithFields(logrus.Fields{
+		"duration_ms": cfg.BuilderDelayTime.Milliseconds(),
+	}).Info("[Builder] Validator service initialized with builder delay time")
 
 	dialOpts := ConstructDialOptions(
 		cfg.GRPCMaxCallRecvMsgSize,
