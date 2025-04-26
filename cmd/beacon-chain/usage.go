@@ -135,7 +135,6 @@ var appHelpFlagGroups = []flagGroup{
 			flags.MevRelayEndpoint,
 			flags.MinBuilderBid,
 			flags.MinBuilderDiff,
-			flags.BuilderDelayTime,
 			flags.SuggestedFeeRecipient,
 			flags.EnableBuilderSSZ,
 		},

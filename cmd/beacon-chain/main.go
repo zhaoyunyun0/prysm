@@ -82,7 +82,6 @@ var appFlags = []cli.Flag{
 	flags.LocalBlockValueBoost,
 	flags.MinBuilderBid,
 	flags.MinBuilderDiff,
-	flags.BuilderDelayTime,
 	flags.BeaconDBPruning,
 	flags.PrunerRetentionEpochs,
 	flags.EnableBuilderSSZ,

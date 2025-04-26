@@ -32,11 +32,11 @@ import (
 	"github.com/prysmaticlabs/prysm/v5/validator/keymanager"
 	"github.com/prysmaticlabs/prysm/v5/validator/keymanager/local"
 	remoteweb3signer "github.com/prysmaticlabs/prysm/v5/validator/keymanager/remote-web3signer"
+	"github.com/sirupsen/logrus"
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"github.com/sirupsen/logrus"
 )
 
 // ValidatorService represents a service to manage the validator client
@@ -226,6 +226,7 @@ func (v *ValidatorService) Start() {
 		emitAccountMetrics:             v.emitAccountMetrics,
 		enableAPI:                      v.enableAPI,
 		distributed:                    v.distributed,
+		builderDelayTime:               v.builderDelayTime,
 	}
 
 	v.validator = valStruct
