@@ -196,7 +196,22 @@ func (vs *Server) getPayloadHeaderFromBuilder(
 		return nil, errors.New("can't get payload header from builder before bellatrix epoch")
 	}
 
+	log.WithFields(logrus.Fields{
+		"timestamp":     time.Now().UnixNano(),
+		"slot":          slot,
+		"proposerIndex": idx,
+		"method":        "getPayloadHeaderFromBuilder",
+		"tags":          []string{"builder", "head_block"},
+	}).Info("Before HeadFetcher.HeadBlock")
 	b, err := vs.HeadFetcher.HeadBlock(ctx)
+	log.WithFields(logrus.Fields{
+		"timestamp":     time.Now().UnixNano(),
+		"slot":          slot,
+		"proposerIndex": idx,
+		"error":         err,
+		"method":        "getPayloadHeaderFromBuilder",
+		"tags":          []string{"builder", "head_block"},
+	}).Info("After HeadFetcher.HeadBlock")
 	if err != nil {
 		return nil, err
 	}
