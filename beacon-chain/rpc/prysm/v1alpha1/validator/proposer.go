@@ -245,10 +245,23 @@ func (vs *Server) BuildBlockParallel(ctx context.Context, sBlk interfaces.Signed
 				return nil, status.Errorf(codes.Internal, "Could not get latest execution payload header: %v", err)
 			}
 			parentGasLimit := latestHeader.GasLimit()
+			log.WithFields(logrus.Fields{
+				"timestamp":      time.Now().UnixNano(),
+				"slot":           sBlk.Block().Slot(),
+				"proposerIndex":  sBlk.Block().ProposerIndex(),
+				"parentGasLimit": parentGasLimit,
+			}).Info("[builder] Before getBuilderPayloadAndBlobs")
 			builderBid, err = vs.getBuilderPayloadAndBlobs(ctx, sBlk.Block().Slot(), sBlk.Block().ProposerIndex(), parentGasLimit)
+			log.WithFields(logrus.Fields{
+				"timestamp":      time.Now().UnixNano(),
+				"slot":           sBlk.Block().Slot(),
+				"proposerIndex":  sBlk.Block().ProposerIndex(),
+				"parentGasLimit": parentGasLimit,
+				"error":          err,
+			}).Info("[builder] After getBuilderPayloadAndBlobs")
 			if err != nil {
 				builderGetPayloadMissCount.Inc()
-				log.WithError(err).Error("Could not get builder payload")
+				log.WithError(err).Error("[builder] Could not get builder payload")
 			}
 		}
 
